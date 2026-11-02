@@ -1,0 +1,10 @@
+.next
+node_modules
+.env
+.env.local
+.env*.txt
+dist
+coverage
+Nova pasta/
+*.tsbuildinfo
+backups/

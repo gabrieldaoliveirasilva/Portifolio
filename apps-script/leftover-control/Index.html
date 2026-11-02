@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leftover Control | Hub Operacional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-line: #e2e8f0;
+      --brand-primary: #0284c7;
+      --brand-hover: #0369a1;
+      --status-ok: #10b981;
+      --status-warn: #f59e0b;
+      --status-danger: #ef4444;
+      --status-overdue: #dc2626;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    /* Top Bar */
+    .top-header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-refresh {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease;
+    }
+    .btn-refresh:hover { background: #0369a1; }
+
+    /* Container */
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 24px 0;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+      border: 1px solid #bae6fd;
+      border-left: 6px solid #0284c7;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .hero-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-primary { background: #e0f2fe; color: #0369a1; }
+    .badge-success { background: #f0fdf4; color: #166534; }
+    .badge-purple { background: #ede9fe; color: #6d28d9; }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .hero-desc {
+      font-size: 14px;
+      color: #475569;
+      max-width: 980px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--border-line);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #64748b;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Main Tab Navigation */
+    .tab-bar {
+      display: flex;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #64748b;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: #ffffff;
+      border: 1px solid var(--border-line);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-line);
+      border-radius: 6px;
+      font-size: 12.5px;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--brand-primary); }
+    .select-filter {
+      padding: 8px 12px;
+      border: 1px solid var(--border-line);
+      border-radius: 6px;
+      font-size: 12px;
+      background: #fff;
+      color: #334155;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .dest-card {
+      background: #ffffff;
+      border: 1px solid var(--border-line);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .dest-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+    .dest-card.risk-critical { border-top: 4px solid var(--status-danger); }
+    .dest-card.risk-warning { border-top: 4px solid var(--status-warn); }
+    .dest-card.risk-ok { border-top: 4px solid var(--status-ok); }
+    .dest-card.risk-overdue { border-top: 4px solid var(--status-overdue); }
+
+    .dest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .dest-code {
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .dest-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+    .cpt-badge {
+      text-align: right;
+    }
+    .cpt-label { font-size: 9px; color: #64748b; display: block; }
+    .cpt-val { font-size: 13px; font-weight: 800; color: #2563eb; }
+    .cpt-val.critical { color: #dc2626; }
+
+    .dest-veh {
+      background: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      margin-bottom: 12px;
+    }
+    .dest-veh-row {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+    }
+    .dest-veh-sub {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 10.5px;
+      margin-top: 4px;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .meter-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      font-size: 10.5px;
+      margin-bottom: 12px;
+    }
+    .pack-pill {
+      background: #f1f5f9;
+      padding: 4px 6px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .pack-pill span { display: block; font-size: 9px; color: #64748b; }
+
+    .dest-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 11px;
+    }
+    .sobra-tag {
+      font-weight: 800;
+      color: #dc2626;
+      background: #fef2f2;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .ok-tag {
+      font-weight: 700;
+      color: #166534;
+      background: #f0fdf4;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Table */
+    .history-table-card {
+      background: #ffffff;
+      border: 1px solid var(--border-line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+      color: #475569;
+      border-bottom: 1px solid var(--border-line);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      place-items: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .modal-head {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 24px;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Code block */
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="top-header">
+    <div class="brand-group">
+      <div class="brand-icon">📦</div>
+      <div>
+        <h1 class="brand-title">LEFTOVER CONTROL | Hub Operacional</h1>
+        <span class="brand-subtitle">Monitoramento de Pátio, CPT &amp; Sobras Logísticas em Tempo Real</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="lastUpdateLabel" style="font-size: 11px; color: #94a3b8;">Sincronizado</span>
+      <button class="btn-refresh" onclick="fetchData(true)">
+        <span id="refreshIcon">↻</span> Atualizar Dados
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-tags">
+        <span class="badge badge-primary">GOOGLE APPS SCRIPT &amp; HTMLSERVICE</span>
+        <span class="badge badge-success">✓ Runtime V8 • 100% Mock Data</span>
+        <span class="badge badge-purple">LockService • CacheService Chunking</span>
+      </div>
+      <h2 class="hero-title">Leftover Control: Gestão de Sobras &amp; Ocupação de Pátio</h2>
+      <p class="hero-desc">
+        Web App corporativo desenvolvido para orquestrar a carga de veículos no cross-docking, detectando sobras projetadas (*Leftovers*) antes do corte de <strong>CPT (Critical Pull Time)</strong> e prevenindo saturação física da frota.
+      </p>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Destinos Monitorados</span>
+        <div class="kpi-value" id="kpiDestCount">8</div>
+        <span class="kpi-sub">Rotas ativas no turno</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pacotes Embalados</span>
+        <div class="kpi-value" id="kpiPackedOrders">8.540</div>
+        <span class="kpi-sub">Ordens prontas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">TOs Embaladas</span>
+        <div class="kpi-value" id="kpiPackedTos">158</div>
+        <span class="kpi-sub">Gaiolas e Pallets</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pacotes Carregados</span>
+        <div class="kpi-value" id="kpiLoadedOrders">5.060</div>
+        <span class="kpi-sub">Escoados para docas</span>
+      </div>
+      <div class="kpi-card" style="border-left: 4px solid #ef4444;">
+        <span class="kpi-label" style="color: #dc2626;">Risco Leftover TOs</span>
+        <div class="kpi-value" id="kpiRiskTos" style="color: #b91c1c;">16 TOs</div>
+        <span class="kpi-sub" style="color: #dc2626; font-weight:700;">Excedente projetado</span>
+      </div>
+      <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+        <span class="kpi-label" style="color: #d97706;">Destinos Críticos</span>
+        <div class="kpi-value" id="kpiRiskDest" style="color: #b45309;">4</div>
+        <span class="kpi-sub">Atenção imediata</span>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabBtnMonitor" onclick="switchView('monitor')">
+        🖥️ Monitoramento em Tempo Real
+      </button>
+      <button class="tab-btn" id="tabBtnHistory" onclick="switchView('history')">
+        📋 Histórico &amp; Justificativas
+      </button>
+      <button class="tab-btn" id="tabBtnArch" onclick="switchView('architecture')">
+        ⚙️ Arquitetura Apps Script
+      </button>
+    </div>
+
+    <!-- VIEW 1: MONITORAMENTO EM TEMPO REAL -->
+    <section id="viewMonitor">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar por Destino, Hub ou Viagem..." oninput="applyFilters()">
+        
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <select id="riskSelect" class="select-filter" onchange="applyFilters()">
+            <option value="all">Status: Todos</option>
+            <option value="risk">Apenas com Sobra / Risco</option>
+            <option value="critical">Apenas Críticos / Atrasados</option>
+            <option value="ok">Apenas Normais (Capacidade OK)</option>
+          </select>
+
+          <select id="shiftSelect" class="select-filter" onchange="applyFilters()">
+            <option value="all">Turno: Todos</option>
+            <option value="T1">Turno T1</option>
+            <option value="T2">Turno T2</option>
+            <option value="T3">Turno T3</option>
+          </select>
+
+          <select id="vehSelect" class="select-filter" onchange="applyFilters()">
+            <option value="all">Veículo: Todos</option>
+            <option value="CARRETA">Carreta</option>
+            <option value="TRUCK">Truck</option>
+            <option value="TOCO">Toco</option>
+            <option value="3/4">3/4</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Destination Cards Grid -->
+      <div class="cards-grid" id="cardsGrid">
+        <!-- Injetado dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: HISTÓRICO & JUSTIFICATIVAS -->
+    <section id="viewHistory" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <strong style="font-size:14px; color:#0f172a;">REGISTRO DE EXPEDIÇÕES &amp; AUDITORIA DE LEFTOVER</strong>
+          <span style="display:block; font-size:11px; color:#64748b;">Viagens finalizadas com controle de sobras operacionais</span>
+        </div>
+        <button class="btn-refresh" onclick="openJustifyModal()">+ Registrar Justificativa</button>
+      </div>
+
+      <div class="history-table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Viagem (Trip)</th>
+                <th>Destino</th>
+                <th>Turno</th>
+                <th>Veículo</th>
+                <th>TOs Carregadas</th>
+                <th>Leftover (Sobra)</th>
+                <th>Status</th>
+                <th>Motivo Declarado</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Injetado dinamicamente via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ARQUITETURA APPS SCRIPT -->
+    <section id="viewArch" style="display:none;">
+      <div class="kpi-card" style="margin-bottom:20px; padding:24px;">
+        <h3 style="font-size:18px; margin-bottom:12px; color:#0f172a;">Padrões de Engenharia Implementados</h3>
+        <p style="font-size:13px; color:#475569; line-height:1.6; margin-bottom:16px;">
+          Esta aplicação foi estruturada seguindo rigorosamente os pilares de performance para Google Apps Script:
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+          <div style="background:#f8fafc; padding:14px; border-radius:8px; border-left:4px solid #0284c7;">
+            <strong>🌐 HtmlService &amp; RPC Assíncrono</strong>
+            <p style="font-size:11.5px; color:#64748b; margin-top:4px;">Comunicação desacoplada via <code>google.script.run</code> para manter a UI veloz.</p>
+          </div>
+          <div style="background:#f8fafc; padding:14px; border-radius:8px; border-left:4px solid #10b981;">
+            <strong>🔐 LockService Atômico</strong>
+            <p style="font-size:11.5px; color:#64748b; margin-top:4px;">Serialização de requisições de gravação para eliminar colisões de dados.</p>
+          </div>
+          <div style="background:#f8fafc; padding:14px; border-radius:8px; border-left:4px solid #8b5cf6;">
+            <strong>⚡ CacheService Particionado</strong>
+            <p style="font-size:11.5px; color:#64748b; margin-top:4px;">Divisão do payload em blocos de 70KB, superando o limite de 100KB do GAS.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Detalhe do Destino -->
+  <div class="modal-backdrop" id="destModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <span style="font-size:10px; color:#94a3b8; text-transform:uppercase; font-weight:700;">DIAGNÓSTICO OPERACIONAL</span>
+          <h3 style="font-size:18px; margin-top:2px;" id="modalDestTitle">HUB-SUD01</h3>
+        </div>
+        <button class="close-btn" onclick="closeModal('destModal')">✕</button>
+      </div>
+      <div class="modal-body" id="modalDestBody">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Registrar Justificativa -->
+  <div class="modal-backdrop" id="justifyModal">
+    <div class="modal-card" style="max-width:520px;">
+      <div class="modal-head">
+        <h3 style="font-size:16px;">Registrar Justificativa de Leftover</h3>
+        <button class="close-btn" onclick="closeModal('justifyModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleJustifySubmit(event)">
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#64748b; margin-bottom:4px;">DESTINO / TRIP</label>
+            <select id="justifyDestSelect" class="select-filter" style="width:100%;"></select>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#64748b; margin-bottom:4px;">MOTIVO DO LEFTOVER</label>
+            <select id="justifyReasonSelect" class="select-filter" style="width:100%;">
+              <option value="Falta de capacidade do veículo">Falta de capacidade física do veículo</option>
+              <option value="Atraso no packing / esteira">Atraso na liberação do packing</option>
+              <option value="Veículo inadequado">Veículo com cubagem menor que o planejado</option>
+              <option value="Carga fora de doca">Carga retida fora da doca de expedição</option>
+              <option value="Outro motivo">Outro desvio operacional</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#64748b; margin-bottom:4px;">PLANO DE AÇÃO / DETALHES</label>
+            <textarea id="justifyDetails" rows="4" style="width:100%; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;" placeholder="Informe a ação corretiva e horário previsto de escoamento..." required></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button type="button" class="btn-refresh" style="background:#e2e8f0; color:#334155;" onclick="closeModal('justifyModal')">Cancelar</button>
+            <button type="submit" class="btn-refresh">Salvar Justificativa</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Estado da Aplicação
+    let currentData = {
+      destinations: [],
+      history: []
+    };
+
+    // Inicialização
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchData(false);
+    });
+
+    function fetchData(forceRefresh) {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.style.animation = 'spin 1s linear infinite';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(onDataLoaded)
+          .withFailureHandler(onError)
+          .getDashboardData(forceRefresh);
+      } else {
+        // Fallback local caso aberto fora do container do Apps Script
+        setTimeout(() => {
+          onDataLoaded({
+            destinations: [
+              { id:"dest-1", code:"HUB-SUD01", name:"Hub Regional Sudeste (Central)", cpt:"21:30", cptHoursRemaining:1.2, plannedVehicle:"CARRETA (28 Pallets)", vehicleCapacity:28, packedTos:34, packedOrders:1820, loadedTos:18, loadedOrders:940, riskStatus:"critical", riskTos:6, leftoverPredicted:6, shift:"T2", tripNumber:"LH-TRIP-98402", statusCarreta:"Em Carregamento", packDistribution:{sacas:16, scuttles:10, pallets:8, outros:0}, suggestedAction:"Solicitar veículo de apoio HR ou Toco imediato (Sobra projetada: +6 TOs)." },
+              { id:"dest-2", code:"CD-CAMPINAS", name:"Centro de Distribuição Campinas", cpt:"22:00", cptHoursRemaining:1.7, plannedVehicle:"TRUCK (16 Pallets)", vehicleCapacity:16, packedTos:19, packedOrders:1050, loadedTos:12, loadedOrders:680, riskStatus:"warning", riskTos:3, leftoverPredicted:3, shift:"T2", tripNumber:"LH-TRIP-98405", statusCarreta:"Aguardando Doca", packDistribution:{sacas:10, scuttles:6, pallets:3, outros:0}, suggestedAction:"Priorizar conferência de gaiolas e verificar encaixe no pátio." },
+              { id:"dest-3", code:"HUB-CAPITAL", name:"Hub Metropolitano Capital", cpt:"23:15", cptHoursRemaining:2.9, plannedVehicle:"CARRETA (28 Pallets)", vehicleCapacity:28, packedTos:24, packedOrders:1390, loadedTos:20, loadedOrders:1180, riskStatus:"ok", riskTos:0, leftoverPredicted:0, shift:"T2", tripNumber:"LH-TRIP-98410", statusCarreta:"Em Carregamento", packDistribution:{sacas:12, scuttles:8, pallets:4, outros:0} },
+              { id:"dest-4", code:"CROSS-VALE", name:"Cross-Docking Vale Paraíba", cpt:"20:45", cptHoursRemaining:0.5, plannedVehicle:"TOCO (14 Pallets)", vehicleCapacity:14, packedTos:18, packedOrders:920, loadedTos:14, loadedOrders:710, riskStatus:"critical", riskTos:4, leftoverPredicted:4, shift:"T2", tripNumber:"LH-TRIP-98398", statusCarreta:"Pronto / No Pátio", packDistribution:{sacas:11, scuttles:4, pallets:3, outros:0}, suggestedAction:"Carreta em pátio cheia. 4 TOs retidas em Stage-out para o próximo turno." },
+              { id:"dest-5", code:"CD-INTERIOR", name:"CD Regional Ribeirão & Região", cpt:"01:00", cptHoursRemaining:4.7, plannedVehicle:"TRUCK (16 Pallets)", vehicleCapacity:16, packedTos:11, packedOrders:580, loadedTos:8, loadedOrders:410, riskStatus:"ok", riskTos:0, leftoverPredicted:0, shift:"T3", tripNumber:"LH-TRIP-98418", statusCarreta:"Aguardando Doca", packDistribution:{sacas:5, scuttles:4, pallets:2, outros:0} },
+              { id:"dest-6", code:"HUB-TRIANGULO", name:"Hub Triângulo & Centro-Oeste", cpt:"02:30", cptHoursRemaining:6.2, plannedVehicle:"CARRETA (28 Pallets)", vehicleCapacity:28, packedTos:30, packedOrders:1640, loadedTos:15, loadedOrders:820, riskStatus:"warning", riskTos:2, leftoverPredicted:2, shift:"T3", tripNumber:"LH-TRIP-98422", statusCarreta:"Aguardando Doca", packDistribution:{sacas:18, scuttles:8, pallets:4, outros:0}, suggestedAction:"Acompanhar fluxo de packing das 23h para rebalanceamento." },
+              { id:"dest-7", code:"CROSS-LESTE", name:"Cross-Docking Leste Fluminense", cpt:"00:45", cptHoursRemaining:4.4, plannedVehicle:"3/4 (8 Pallets)", vehicleCapacity:8, packedTos:7, packedOrders:360, loadedTos:5, loadedOrders:270, riskStatus:"ok", riskTos:0, leftoverPredicted:0, shift:"T3", tripNumber:"LH-TRIP-98415", statusCarreta:"Em Carregamento", packDistribution:{sacas:4, scuttles:2, pallets:1, outros:0} },
+              { id:"dest-8", code:"CD-LITORAL", name:"Centro Logístico Baixada & Porto", cpt:"19:50", cptHoursRemaining:-0.4, plannedVehicle:"TOCO (14 Pallets)", vehicleCapacity:14, packedTos:15, packedOrders:790, loadedTos:14, loadedOrders:740, riskStatus:"overdue", riskTos:1, leftoverPredicted:1, shift:"T1", tripNumber:"LH-TRIP-98380", statusCarreta:"Em Trajeto", packDistribution:{sacas:8, scuttles:4, pallets:3, outros:0}, suggestedAction:"CPT expirado. 1 TO deixada para trás por falta de capacidade física." }
+            ],
+            history: [
+              { trip:"LH-TRIP-98380", dest:"CD-LITORAL", shift:"T1", veh:"TOCO", loaded:14, leftover:1, status:"Justificada", reason:"Falta de capacidade física do veículo" },
+              { trip:"LH-TRIP-98365", dest:"HUB-SUD01", shift:"T1", veh:"CARRETA", loaded:28, leftover:4, status:"Justificada", reason:"Atraso na liberação do packing" },
+              { trip:"LH-TRIP-98350", dest:"CD-CAMPINAS", shift:"T1", veh:"TRUCK", loaded:16, leftover:0, status:"Sem Sobra", reason:"Operação 100% escoada" },
+              { trip:"LH-TRIP-98335", dest:"CROSS-VALE", shift:"T3 (Ontem)", veh:"TOCO", loaded:14, leftover:3, status:"Pendente", reason:"Aguardando aprovação de supervisão" },
+              { trip:"LH-TRIP-98320", dest:"HUB-CAPITAL", shift:"T3 (Ontem)", veh:"CARRETA", loaded:28, leftover:0, status:"Sem Sobra", reason:"Operação 100% escoada" }
+            ],
+            updatedAt: new Date().toLocaleTimeString('pt-BR')
+          });
+        }, 300);
+      }
+    }
+
+    function onDataLoaded(data) {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.style.animation = 'none';
+
+      currentData = data;
+      document.getElementById('lastUpdateLabel').innerText = 'Atualizado: ' + (data.updatedAt || 'Agora');
+
+      updateKPIs(data.destinations);
+      populateJustifySelect(data.destinations);
+      renderCards(data.destinations);
+      renderHistory(data.history);
+    }
+
+    function onError(err) {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.style.animation = 'none';
+      alert('Erro ao carregar dados: ' + (err.message || err));
+    }
+
+    function updateKPIs(dests) {
+      const totalDest = dests.length;
+      const totalPackedOrders = dests.reduce((a, b) => a + (b.packedOrders || 0), 0);
+      const totalPackedTos = dests.reduce((a, b) => a + (b.packedTos || 0), 0);
+      const totalLoadedOrders = dests.reduce((a, b) => a + (b.loadedOrders || 0), 0);
+      const totalRiskTos = dests.reduce((a, b) => a + (b.riskTos || 0), 0);
+      const totalCritical = dests.filter(d => d.riskStatus === 'critical' || d.riskStatus === 'warning' || d.riskStatus === 'overdue').length;
+
+      document.getElementById('kpiDestCount').innerText = totalDest;
+      document.getElementById('kpiPackedOrders').innerText = totalPackedOrders.toLocaleString('pt-BR');
+      document.getElementById('kpiPackedTos').innerText = totalPackedTos.toLocaleString('pt-BR');
+      document.getElementById('kpiLoadedOrders').innerText = totalLoadedOrders.toLocaleString('pt-BR');
+      document.getElementById('kpiRiskTos').innerText = totalRiskTos + ' TOs';
+      document.getElementById('kpiRiskDest').innerText = totalCritical;
+    }
+
+    function renderCards(dests) {
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
+
+      if (dests.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#64748b;">Nenhum destino encontrado com os filtros selecionados.</div>';
+        return;
+      }
+
+      dests.forEach(item => {
+        const pct = Math.round((item.packedTos / item.vehicleCapacity) * 100);
+        const isCritical = item.riskStatus === 'critical' || item.riskStatus === 'overdue';
+        const isWarning = item.riskStatus === 'warning';
+        const meterColor = isCritical ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
+
+        const card = document.createElement('div');
+        card.className = 'dest-card risk-' + item.riskStatus;
+        card.onclick = () => openDestModal(item);
+
+        card.innerHTML = `
+          <div class="dest-header">
+            <div>
+              <span class="dest-code">${item.code} • Turno ${item.shift}</span>
+              <strong class="dest-name">${item.name}</strong>
+            </div>
+            <div class="cpt-badge">
+              <span class="cpt-label">CPT</span>
+              <strong class="cpt-val ${isCritical ? 'critical' : ''}">${item.cpt}</strong>
+            </div>
+          </div>
+
+          <div class="dest-veh">
+            <div class="dest-veh-row">
+              <span>Veículo: <strong>${item.plannedVehicle}</strong></span>
+              <span>Cap: <strong>${item.vehicleCapacity} TOs</strong></span>
+            </div>
+            <div class="dest-veh-sub">
+              <span>Trip: ${item.tripNumber}</span>
+              <span style="color:#0284c7; font-weight:700;">${item.statusCarreta}</span>
+            </div>
+          </div>
+
+          <div class="meter-label">
+            <span style="color:#64748b;">Ocupação de TOs</span>
+            <strong>${item.packedTos} / ${item.vehicleCapacity} TOs (${pct}%)</strong>
+          </div>
+          <div class="meter-bar">
+            <div class="meter-fill" style="width:${Math.min(100, pct)}%; background:${meterColor};"></div>
+          </div>
+
+          <div class="pack-grid">
+            <div class="pack-pill"><span>Sacas</span><strong>${item.packDistribution.sacas} TOs</strong></div>
+            <div class="pack-pill"><span>Scuttles</span><strong>${item.packDistribution.scuttles} TOs</strong></div>
+            <div class="pack-pill"><span>Pallets</span><strong>${item.packDistribution.pallets} TOs</strong></div>
+          </div>
+
+          <div class="dest-footer">
+            ${item.leftoverPredicted > 0 
+              ? `<span class="sobra-tag">⚠️ Sobra: +${item.leftoverPredicted} TOs</span>` 
+              : `<span class="ok-tag">✓ Capacidade OK</span>`}
+            <span style="color:#0284c7; font-weight:700;">Ver Detalhes →</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderHistory(history) {
+      const tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = '';
+
+      (history || []).forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:700; color:#0284c7;">${row.trip}</td>
+          <td style="font-weight:600;">${row.dest}</td>
+          <td style="color:#64748b;">${row.shift}</td>
+          <td>${row.veh}</td>
+          <td style="font-weight:700;">${row.loaded} TOs</td>
+          <td>${row.leftover > 0 ? `<span style="color:#dc2626; font-weight:800;">+${row.leftover} TOs</span>` : `<span style="color:#166534;">0 TOs</span>`}</td>
+          <td>
+            <span class="badge ${row.status === 'Justificada' ? 'badge-success' : row.status === 'Pendente' ? 'badge-primary' : ''}">
+              ${row.status}
+            </span>
+          </td>
+          <td style="color:#64748b;">${row.reason}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyFilters() {
+      const q = (document.getElementById('searchInput').value || '').toLowerCase();
+      const risk = document.getElementById('riskSelect').value;
+      const shift = document.getElementById('shiftSelect').value;
+      const veh = document.getElementById('vehSelect').value;
+
+      const filtered = (currentData.destinations || []).filter(item => {
+        if (q && !item.code.toLowerCase().includes(q) && !item.name.toLowerCase().includes(q) && !item.tripNumber.toLowerCase().includes(q)) {
+          return false;
+        }
+        if (risk === 'risk' && item.riskStatus === 'ok') return false;
+        if (risk === 'critical' && item.riskStatus !== 'critical' && item.riskStatus !== 'overdue') return false;
+        if (risk === 'ok' && item.riskStatus !== 'ok') return false;
+        if (shift !== 'all' && item.shift !== shift) return false;
+        if (veh !== 'all' && !item.plannedVehicle.includes(veh)) return false;
+        return true;
+      });
+
+      renderCards(filtered);
+    }
+
+    function switchView(view) {
+      document.getElementById('tabBtnMonitor').classList.toggle('active', view === 'monitor');
+      document.getElementById('tabBtnHistory').classList.toggle('active', view === 'history');
+      document.getElementById('tabBtnArch').classList.toggle('active', view === 'architecture');
+
+      document.getElementById('viewMonitor').style.display = view === 'monitor' ? 'block' : 'none';
+      document.getElementById('viewHistory').style.display = view === 'history' ? 'block' : 'none';
+      document.getElementById('viewArch').style.display = view === 'architecture' ? 'block' : 'none';
+    }
+
+    function openDestModal(item) {
+      document.getElementById('modalDestTitle').innerText = item.code + ' - ' + item.name;
+      const body = document.getElementById('modalDestBody');
+      body.innerHTML = `
+        <div style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:16px;">
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; font-size:12px;">
+            <div><span style="color:#64748b; display:block;">Viagem (Trip)</span><strong style="color:#0284c7;">${item.tripNumber}</strong></div>
+            <div><span style="color:#64748b; display:block;">CPT de Partida</span><strong>${item.cpt}</strong></div>
+            <div><span style="color:#64748b; display:block;">Status Carreta</span><strong style="color:#0369a1;">${item.statusCarreta}</strong></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+          <div style="background:#eff6ff; padding:14px; border-radius:8px; border:1px solid #bfdbfe;">
+            <span style="font-size:11px; color:#1e40af; display:block;">Capacidade Máxima</span>
+            <div style="font-size:22px; font-weight:900; color:#1e3a8a;">${item.vehicleCapacity} TOs</div>
+            <span style="font-size:11px; color:#64748b;">${item.plannedVehicle}</span>
+          </div>
+
+          <div style="background:${item.leftoverPredicted > 0 ? '#fef2f2' : '#f0fdf4'}; padding:14px; border-radius:8px; border:1px solid ${item.leftoverPredicted > 0 ? '#fecaca' : '#bbf7d0'};">
+            <span style="font-size:11px; color:${item.leftoverPredicted > 0 ? '#dc2626' : '#166534'}; display:block;">Situação da Carga</span>
+            <div style="font-size:22px; font-weight:900; color:${item.leftoverPredicted > 0 ? '#b91c1c' : '#15803d'};">
+              ${item.leftoverPredicted > 0 ? `+${item.leftoverPredicted} TOs Sobra` : 'Capacidade OK'}
+            </div>
+            <span style="font-size:11px; color:#64748b;">${item.packedTos} TOs embaladas</span>
+          </div>
+        </div>
+
+        ${item.suggestedAction ? `
+          <div style="background:#fffbeb; padding:12px 14px; border-radius:8px; border-left:4px solid #f59e0b; margin-bottom:16px; font-size:12.5px; color:#92400e;">
+            <strong>Ação Recomendada pela Torre:</strong>
+            <p style="margin-top:4px;">${item.suggestedAction}</p>
+          </div>
+        ` : ''}
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="btn-refresh" onclick="closeModal('destModal')">Fechar</button>
+        </div>
+      `;
+      document.getElementById('destModal').style.display = 'grid';
+    }
+
+    function populateJustifySelect(dests) {
+      const select = document.getElementById('justifyDestSelect');
+      if (!select) return;
+      select.innerHTML = '';
+      dests.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.tripNumber + ' (' + d.code + ')';
+        opt.innerText = d.tripNumber + ' - ' + d.code + ' (' + d.name + ')';
+        select.appendChild(opt);
+      });
+    }
+
+    function openJustifyModal() {
+      document.getElementById('justifyModal').style.display = 'grid';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function handleJustifySubmit(e) {
+      e.preventDefault();
+      const payload = {
+        destination: document.getElementById('justifyDestSelect').value,
+        reason: document.getElementById('justifyReasonSelect').value,
+        text: document.getElementById('justifyDetails').value
+      };
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler((res) => {
+            alert('Justificativa gravada com sucesso via LockService!');
+            closeModal('justifyModal');
+            fetchData(true);
+          })
+          .withFailureHandler((err) => {
+            alert('Falha ao salvar: ' + (err.message || err));
+          })
+          .saveJustification(payload);
+      } else {
+        alert('Simulação local: Justificativa registrada para ' + payload.destination);
+        closeModal('justifyModal');
+      }
+    }
+  </script>
+</body>
+</html>
+
