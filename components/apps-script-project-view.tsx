@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PerformanceMonitorView from "./performance-monitor-view";
 
 interface AppsScriptProjectViewProps {
   onBackToCapa?: () => void;
@@ -208,6 +209,20 @@ const INITIAL_DESTINATIONS: DestinationMonitor[] = [
 
 export default function AppsScriptProjectView({ onBackToCapa }: AppsScriptProjectViewProps = {}) {
   const router = useRouter();
+
+  // Ramificação entre Casos Apps Script (Leftover Control vs Performance Monitor)
+  const [activeSubProject, setActiveSubProject] = useState<"leftover" | "performance-monitor">("leftover");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const proj = params.get("case") || params.get("project") || params.get("ramificacao");
+      if (proj === "performance-monitor" || proj === "perf" || proj === "monitor") {
+        setActiveSubProject("performance-monitor");
+      }
+    }
+  }, []);
+
   // Navigation Tabs
   const [activeMainTab, setActiveMainTab] = useState<"demo" | "architecture" | "code">("demo");
   const [activeDemoView, setActiveDemoView] = useState<"monitor" | "history">("monitor");
@@ -529,7 +544,81 @@ function writeDashboardCache_(baseKey, payload) {
         </Link>
       </div>
 
-      {/* Hero Header do Projeto Apps Script */}
+      {/* SELETOR DE RAMIFICAÇÃO DE PROJETOS APPS SCRIPT */}
+      <div
+        style={{
+          background: "#0f172a",
+          borderRadius: "12px",
+          padding: "10px 16px",
+          marginBottom: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "12px",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.12)"
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "16px" }}>📂</span>
+          <span style={{ fontSize: "12.5px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            Ramificação de Casos Apps Script:
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={() => setActiveSubProject("leftover")}
+            style={{
+              padding: "8px 18px",
+              borderRadius: "8px",
+              border: "none",
+              fontSize: "13px",
+              fontWeight: 700,
+              cursor: "pointer",
+              background: activeSubProject === "leftover" ? "#0284c7" : "#1e293b",
+              color: activeSubProject === "leftover" ? "#ffffff" : "#94a3b8",
+              boxShadow: activeSubProject === "leftover" ? "0 2px 8px rgba(2, 132, 199, 0.4)" : "none",
+              transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <span>🚚</span>
+            <span>Caso 1: Leftover Control &amp; Pátio</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSubProject("performance-monitor")}
+            style={{
+              padding: "8px 18px",
+              borderRadius: "8px",
+              border: "none",
+              fontSize: "13px",
+              fontWeight: 700,
+              cursor: "pointer",
+              background: activeSubProject === "performance-monitor" ? "#0284c7" : "#1e293b",
+              color: activeSubProject === "performance-monitor" ? "#ffffff" : "#94a3b8",
+              boxShadow: activeSubProject === "performance-monitor" ? "0 2px 8px rgba(2, 132, 199, 0.4)" : "none",
+              transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <span>⚡</span>
+            <span>Caso 2: Performance Monitor (Telemetria)</span>
+            <span style={{ fontSize: "10px", background: "#f59e0b", color: "#000000", fontWeight: 800, padding: "1px 6px", borderRadius: "4px" }}>NOVO</span>
+          </button>
+        </div>
+      </div>
+
+      {activeSubProject === "performance-monitor" ? (
+        <PerformanceMonitorView onBackToLeftover={() => setActiveSubProject("leftover")} />
+      ) : (
+        <>
+          {/* Hero Header do Projeto Apps Script */}
       <div
         className="card"
         style={{
@@ -1823,6 +1912,8 @@ function writeDashboardCache_(baseKey, payload) {
             )}
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -14,7 +14,11 @@ interface Performer {
   badge?: string;
 }
 
-export default function PerformanceMonitorView() {
+interface PerformanceMonitorViewProps {
+  onBackToLeftover?: () => void;
+}
+
+export default function PerformanceMonitorView({ onBackToLeftover }: PerformanceMonitorViewProps = {}) {
   const [activeNav, setActiveNav] = useState("home");
   const [activeZoneTab, setActiveZoneTab] = useState("all");
 
@@ -339,12 +343,23 @@ export default function PerformanceMonitorView() {
               Abrir Web App no Google Apps Script ↗
             </a>
 
-            <Link
-              href="/projeto-apps-script"
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:text-sky-600 hover:border-sky-300 transition-all"
-            >
-              Ver Projeto Leftover
-            </Link>
+            {onBackToLeftover ? (
+              <button
+                type="button"
+                onClick={onBackToLeftover}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:text-sky-600 hover:border-sky-300 transition-all flex items-center gap-1.5"
+              >
+                <span>←</span>
+                <span>Caso 1: Leftover Control</span>
+              </button>
+            ) : (
+              <Link
+                href="/projeto-apps-script"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:text-sky-600 hover:border-sky-300 transition-all"
+              >
+                Ver Projeto Leftover
+              </Link>
+            )}
 
             <button className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-all">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
