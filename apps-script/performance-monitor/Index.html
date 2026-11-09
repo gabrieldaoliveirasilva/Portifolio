@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>PERFORMANCE MONITOR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #f1f4f9;
+      --surface-white: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --border-subtle: #e6edf5;
+      --border-focus: #cbd5e1;
+      --cyan-main: #06b6d4;
+      --cyan-light: #e0f2fe;
+      --blue-accent: #38bdf8;
+      --indigo-accent: #6366f1;
+      --purple-accent: #8b5cf6;
+      --green-accent: #10b981;
+      --green-light: #ecfdf5;
+      --orange-accent: #f97316;
+      --amber-accent: #f59e0b;
+      --pink-accent: #ec4899;
+      --radius-xl: 18px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+      --shadow-hover: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+      --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Side Navigation */
+    .sidebar {
+      width: 72px;
+      background: var(--surface-white);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      gap: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .side-icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      position: relative;
+    }
+    .side-icon-btn:hover {
+      background: #f8fafc;
+      color: #0284c7;
+    }
+    .side-icon-btn.active {
+      color: #0284c7;
+      background: #f0f9ff;
+      box-shadow: inset 0 0 0 1.5px #bae6fd;
+    }
+    .sidebar-spacer { flex: 1; }
+
+    /* Main Container */
+    .app-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding-bottom: 40px;
+    }
+
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      background: transparent;
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #38bdf8 100%);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+      letter-spacing: -0.02em;
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #1e293b;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .action-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .action-icon-btn:hover {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    .notif-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      background: #ef4444;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #ffffff;
+    }
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 5px 14px 5px 6px;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: 30px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+      cursor: pointer;
+    }
+    .user-avatar-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: grid;
+      place-items: center;
+      color: #475569;
+      font-weight: 700;
+      font-size: 13px;
+      overflow: hidden;
+    }
+    .user-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .user-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .user-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .user-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Content Area */
+    .content-body {
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* KPI Grid - 6 Columns */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+    }
+    .kpi-card {
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .kpi-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .kpi-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .kpi-icon {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .kpi-subtext {
+      font-size: 11px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dot-green {
+      color: #10b981;
+      font-size: 14px;
+      line-height: 0;
+    }
+
+    /* Distinct Gradient Tints for KPI Cards */
+    .kpi-card.kpi-actions {
+      background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 60%);
+      border-color: #ccfbf1;
+    }
+    .kpi-card.kpi-efficiency {
+      background: linear-gradient(180deg, #fff1f2 0%, #ffffff 75%);
+      border-color: #ffe4e6;
+    }
+    .kpi-card.kpi-sessions {
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 60%);
+      border-color: #dbeafe;
+    }
+    .kpi-card.kpi-sync {
+      background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 60%);
+      border-color: #d1fae5;
+    }
+    .kpi-card.kpi-server {
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 60%);
+      border-color: #e2e8f0;
+    }
+    .kpi-card.kpi-bandwidth {
+      background: linear-gradient(180deg, #fff7ed 0%, #ffffff 60%);
+      border-color: #ffedd5;
+    }
+
+    /* Progress bar for Efficiency Index */
+    .efficiency-bar-track {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .efficiency-bar-fill {
+      height: 100%;
+      width: 94.2%;
+      background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);
+      border-radius: 4px;
+      transition: width 1s ease-in-out;
+    }
+
+    /* Middle Row - Charts */
+    .middle-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 20px;
+    }
+
+    .dashboard-card {
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .card-title-group h2 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      margin-bottom: 3px;
+    }
+    .card-title-group p {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .legend-pills {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot-solid {
+      width: 8px;
+      height: 8px;
+      background: #0ea5e9;
+      border-radius: 50%;
+    }
+    .legend-dot-hollow {
+      width: 8px;
+      height: 8px;
+      border: 2px solid #38bdf8;
+      border-radius: 50%;
+    }
+    .view-all-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: #f0f9ff;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* SVG Chart Area */
+    .traffic-chart-container {
+      position: relative;
+      width: 100%;
+      height: 250px;
+    }
+    .traffic-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Peak Badge Callouts */
+    .peak-badge {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      fill: #0f172a;
+      text-anchor: middle;
+    }
+    .peak-line {
+      stroke: #cbd5e1;
+      stroke-width: 1;
+      stroke-dasharray: 3 3;
+    }
+
+    /* Zone Throughput Widget */
+    .throughput-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .tp-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .tp-name {
+      font-weight: 600;
+      color: #334155;
+    }
+    .tp-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tp-tag-primary {
+      color: #059669;
+    }
+    .tp-tag-secondary {
+      color: #64748b;
+    }
+    .tp-bar-track {
+      width: 100%;
+      height: 11px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .tp-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.8s ease;
+    }
+
+    /* Bottom Row - 3 Performers Cards */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .performer-table {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .performer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 12px;
+      transition: background 0.15s ease;
+    }
+    .performer-row:hover {
+      background: #f8fafc;
+    }
+    .performer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .rank-badge {
+      width: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      color: #64748b;
+    }
+    .performer-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e2e8f0;
+      border: 1px solid #f1f5f9;
+    }
+    .performer-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+    .performer-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .performer-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .performer-score-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.2;
+    }
+    .performer-score {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .performer-delta {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .delta-teal {
+      color: #0284c7;
+    }
+
+    /* Bottom Info Status Banner */
+    .status-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px;
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #ecfdf5;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    /* Floating Tooltip */
+    #chartTooltip {
+      position: absolute;
+      display: none;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .middle-grid { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .topbar { padding: 14px 18px; }
+      .content-body { padding: 0 18px; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar Icons -->
+  <aside class="sidebar">
+    <div class="side-icon-btn" title="Localização / HUB">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+    </div>
+    <div class="side-icon-btn active" title="Painel Principal">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </div>
+    <div class="side-icon-btn" title="Relatórios e Documentos">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+    </div>
+    <div class="side-icon-btn" title="Checklist & Tarefas">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+    </div>
+    <div class="side-icon-btn" title="Radar Operacional">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="6"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+    </div>
+    <div class="side-icon-btn" title="Repositório / Pastas">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <div class="side-icon-btn" title="Configurações">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </div>
+  </aside>
+
+  <!-- Main View -->
+  <main class="app-main">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-mark">N</div>
+        <h1 class="brand-title">PERFORMANCE MONITOR</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="action-icon-btn" title="Mensagens e Chats">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+        <button class="action-icon-btn" title="Notificações do Sistema">
+          <div class="notif-dot"></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+        <div class="user-pill" title="Perfil do Usuário">
+          <div class="user-avatar-circle">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80" alt="Avatar">
+          </div>
+          <div class="user-meta">
+            <span class="user-name">Bert Performe...</span>
+            <span class="user-sub">Donavig, 14</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Body Contents -->
+    <div class="content-body">
+      
+      <!-- 6 Top KPI Cards -->
+      <section class="kpi-row">
+        <!-- 1: Total Actions -->
+        <article class="kpi-card kpi-actions">
+          <div class="kpi-card-header">
+            <span class="kpi-label">TOTAL ACTIONS</span>
+            <span class="kpi-icon" title="Total de eventos e ações processadas">ⓘ</span>
+          </div>
+          <div class="kpi-value" id="valTotalActions">4,210,895</div>
+          <div class="kpi-subtext">
+            <span class="dot-green">•</span> Innoiantive change (days)
+          </div>
+        </article>
+
+        <!-- 2: Efficiency Index -->
+        <article class="kpi-card kpi-efficiency">
+          <div class="kpi-card-header">
+            <span class="kpi-label">EFFICIENCY INDEX</span>
+            <span class="kpi-icon">⚡</span>
+          </div>
+          <div class="kpi-value" id="valEfficiency">94.2%</div>
+          <div class="efficiency-bar-track">
+            <div class="efficiency-bar-fill" id="fillEfficiency"></div>
+          </div>
+        </article>
+
+        <!-- 3: Active Sessions -->
+        <article class="kpi-card kpi-sessions">
+          <div class="kpi-card-header">
+            <span class="kpi-label">ACTIVE SESSIONS</span>
+            <span class="kpi-icon">ⓘ</span>
+          </div>
+          <div class="kpi-value" id="valSessions">12,840</div>
+          <div class="kpi-subtext">Prosesxed chamge (Dape)</div>
+        </article>
+
+        <!-- 4: Sync Rate -->
+        <article class="kpi-card kpi-sync">
+          <div class="kpi-card-header">
+            <span class="kpi-label">SYNC RATE</span>
+            <span class="kpi-icon">🔄</span>
+          </div>
+          <div class="kpi-value" id="valSync">98.7%</div>
+          <div class="kpi-subtext">Yoss sant calage (D5%)</div>
+        </article>
+
+        <!-- 5: Server Nodes -->
+        <article class="kpi-card kpi-server">
+          <div class="kpi-card-header">
+            <span class="kpi-label">SERVER NODES</span>
+            <span class="kpi-icon">🖥️</span>
+          </div>
+          <div class="kpi-value" id="valNodes">1,024</div>
+          <div class="kpi-subtext">
+            <span class="dot-green">•</span> Excrpttive (Hpids)
+          </div>
+        </article>
+
+        <!-- 6: Bandwidth -->
+        <article class="kpi-card kpi-bandwidth">
+          <div class="kpi-card-header">
+            <span class="kpi-label">BANDWIDTH</span>
+            <span class="kpi-icon">ⓘ</span>
+          </div>
+          <div class="kpi-value" id="valBandwidth">8.4 GB/s</div>
+          <div class="kpi-subtext">Desa frecttive (xxpo)</div>
+        </article>
+      </section>
+
+      <!-- Middle Row: Hourly Traffic Peak & Zone Throughput -->
+      <section class="middle-grid">
+        
+        <!-- Left: Hourly Traffic Peak Chart -->
+        <article class="dashboard-card">
+          <div class="card-top">
+            <div class="card-title-group">
+              <h2>Hourly Traffic Peak</h2>
+              <p>Hortess • CHS / ouses per rdsyer Todjetts</p>
+            </div>
+            <div class="chart-controls">
+              <div class="legend-pills">
+                <span class="legend-item"><span class="legend-dot-solid"></span> Derociless</span>
+                <span class="legend-item"><span class="legend-dot-hollow"></span> Gest 4 abe stotices</span>
+              </div>
+              <div class="view-all-dropdown">
+                <span>Vee All</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- SVG Chart -->
+          <div class="traffic-chart-container" id="chartContainer">
+            <svg class="traffic-svg" id="trafficSvg" viewBox="0 0 600 230" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.25"/>
+                </linearGradient>
+                <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#06b6d4"/>
+                  <stop offset="100%" stop-color="#38bdf8"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Grid Horizontal Lines -->
+              <g stroke="#f1f5f9" stroke-width="1">
+                <line x1="30" y1="30" x2="580" y2="30"/>
+                <line x1="30" y1="75" x2="580" y2="75"/>
+                <line x1="30" y1="120" x2="580" y2="120"/>
+                <line x1="30" y1="165" x2="580" y2="165"/>
+                <line x1="30" y1="210" x2="580" y2="210"/>
+              </g>
+
+              <!-- Y Axis Labels -->
+              <g fill="#94a3b8" font-size="10" text-anchor="end">
+                <text x="24" y="34">100</text>
+                <text x="24" y="79">80</text>
+                <text x="24" y="124">60</text>
+                <text x="24" y="169">40</text>
+                <text x="24" y="214">0</text>
+              </g>
+
+              <!-- Dynamic Chart Elements Container -->
+              <g id="chartDynamicBars"></g>
+              <g id="chartDynamicLines"></g>
+              <g id="chartPeakCallouts"></g>
+            </svg>
+            <div id="chartTooltip"></div>
+          </div>
+        </article>
+
+        <!-- Right: Zone Throughput -->
+        <article class="dashboard-card">
+          <div class="card-top">
+            <div class="card-title-group">
+              <h2>Zone Throughput</h2>
+              <p>Fix Brodge pay troued in Bhrorughyed RoV</p>
+            </div>
+            <div style="display: flex; gap: 6px; color: #94a3b8; font-size: 13px; cursor: pointer;">
+              <span>‹</span><span>›</span>
+            </div>
+          </div>
+
+          <div class="throughput-list" id="throughputContainer">
+            <!-- Items rendered via JavaScript -->
+          </div>
+        </article>
+      </section>
+
+      <!-- Bottom Row: 3 Top Performers Zone Cards -->
+      <section class="bottom-grid">
+        
+        <!-- Zone A-1 -->
+        <article class="dashboard-card">
+          <div class="card-top" style="margin-bottom: 12px;">
+            <div class="card-title-group">
+              <h2>Top Performers Zone A-1</h2>
+              <p>Imottted</p>
+            </div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Score</span>
+          </div>
+          <div class="performer-table" id="performersZoneA"></div>
+        </article>
+
+        <!-- Zone B-2 -->
+        <article class="dashboard-card">
+          <div class="card-top" style="margin-bottom: 12px;">
+            <div class="card-title-group">
+              <h2>Top Performers Zone B-2</h2>
+              <p>Reneted</p>
+            </div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Score</span>
+          </div>
+          <div class="performer-table" id="performersZoneB"></div>
+        </article>
+
+        <!-- Zone C-3 -->
+        <article class="dashboard-card">
+          <div class="card-top" style="margin-bottom: 12px;">
+            <div class="card-title-group">
+              <h2>Top Performers Zone C-3</h2>
+              <p>Reosted</p>
+            </div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Score</span>
+          </div>
+          <div class="performer-table" id="performersZoneC"></div>
+        </article>
+      </section>
+
+      <!-- Status Footer Bar -->
+      <footer class="status-footer">
+        <div class="status-left">
+          <span class="status-pill" id="badgeStatus">
+            <span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>
+            Telemetria Online (100% Mockado)
+          </span>
+          <span id="footerUpdatedAt">Última atualização: Hoje às 10:15</span>
+        </div>
+        <div>Google Apps Script • HtmlService Engine • Resiliência V8</div>
+      </footer>
+
+    </div>
+  </main>
+
+  <script>
+    // ==================================================================================
+    // 100% DATA SINTÉTICA / MOCK DATA DE ALTA FIDELIDADE
+    // ==================================================================================
+    const FALLBACK_MOCK_DATA = {
+      kpis: {
+        totalActions: 4210895,
+        totalActionsSub: "• Innoiantive change (days)",
+        efficiencyIndex: 94.2,
+        activeSessions: 12840,
+        activeSessionsSub: "Prosesxed chamge (Dape)",
+        syncRate: 98.7,
+        syncRateSub: "Yoss sant calage (D5%)",
+        serverNodes: 1024,
+        serverNodesSub: "• Excrpttive (Hpids)",
+        bandwidth: "8.4 GB/s",
+        bandwidthSub: "Desa frecttive (xxpo)"
+      },
+      traffic: [
+        { hour: "Nov 11", derociless: 42, gestStotices: 58, peakLabel: null },
+        { hour: "02h", derociless: 68, gestStotices: 64, peakLabel: "471.6K" },
+        { hour: "Jan", derociless: 48, gestStotices: 88, peakLabel: null },
+        { hour: "06h", derociless: 60, gestStotices: 72, peakLabel: null },
+        { hour: "Mar", derociless: 95, gestStotices: 98, peakLabel: "172.48K" },
+        { hour: "10h", derociless: 55, gestStotices: 52, peakLabel: null },
+        { hour: "Jun", derociless: 40, gestStotices: 45, peakLabel: null },
+        { hour: "14h", derociless: 90, gestStotices: 92, peakLabel: "62.82K" },
+        { hour: "Apr", derociless: 35, gestStotices: 40, peakLabel: null },
+        { hour: "18h", derociless: 78, gestStotices: 82, peakLabel: null }
+      ],
+      throughput: [
+        {
+          name: "Inverted",
+          percentage: 1.51,
+          secondaryTag: "29ers",
+          gradient: "linear-gradient(90deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%)"
+        },
+        {
+          name: "Querited",
+          percentage: 96,
+          secondaryTag: "96%",
+          gradient: "linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%)"
+        },
+        {
+          name: "Venoo mcactipection",
+          percentage: 110,
+          secondaryTag: "88%",
+          gradient: "linear-gradient(90deg, #f97316 0%, #06b6d4 100%)"
+        },
+        {
+          name: "Oonrative",
+          percentage: 443,
+          secondaryTag: "44%",
+          gradient: "linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%)"
+        },
+        {
+          name: "Charge roode",
+          percentage: 1.21,
+          secondaryTag: "22%",
+          gradient: "linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)"
+        },
+        {
+          name: "Apni sode",
+          percentage: -10,
+          secondaryTag: "-10%",
+          gradient: "linear-gradient(90deg, #94a3b8 0%, #cbd5e1 100%)"
+        }
+      ],
+      performers: {
+        "Zone A-1": [
+          {
+            rank: 1,
+            name: "Alex Morgan",
+            role: "Piec &Abrgin",
+            score: 1283,
+            delta: "+210.198% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "🥇"
+          },
+          {
+            rank: 2,
+            name: "Elena Rostova",
+            role: "Dlena Rostoo",
+            score: 1000,
+            delta: "+2,876.127% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "2"
+          },
+          {
+            rank: 3,
+            name: "Eatom Maroca",
+            role: "Takas Mamika",
+            score: 189,
+            delta: "+232.833% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "3"
+          },
+          {
+            rank: 4,
+            name: "Aalia Malik",
+            role: "Farso Rora",
+            score: 1171,
+            delta: "+2.8.473% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "4"
+          }
+        ],
+        "Zone B-2": [
+          {
+            rank: 1,
+            name: "Elena Rostova",
+            role: "Elena Rostova",
+            score: 2583,
+            delta: "-1213 1.08% ↑",
+            deltaColor: "delta-teal",
+            avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "🥈"
+          },
+          {
+            rank: 2,
+            name: "Liora Choo",
+            role: "Zheo Choo",
+            score: 1264,
+            delta: "+2.11 198% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "2"
+          },
+          {
+            rank: 3,
+            name: "Zofia Al-Mansour",
+            role: "Boraa Chouua",
+            score: 481,
+            delta: "+2.3.332% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "3"
+          },
+          {
+            rank: 4,
+            name: "Yaliti Tanaka",
+            role: "Banla Caniaka",
+            score: 2325,
+            delta: "+2.63.32% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "4"
+          }
+        ],
+        "Zone C-3": [
+          {
+            rank: 1,
+            name: "Alex Morgan",
+            role: "Mush Exborga",
+            score: 1872,
+            delta: "+2.130.181% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "1"
+          },
+          {
+            rank: 2,
+            name: "Elena Rostova",
+            role: "Liant Sirun",
+            score: 1111,
+            delta: "+27/6.8.67% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "2"
+          },
+          {
+            rank: 3,
+            name: "Zofia Al-Mansour",
+            role: "Valina Sllna",
+            score: 637,
+            delta: "+2.31.337% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "3"
+          },
+          {
+            rank: 4,
+            name: "Molee Sllnn",
+            role: "Motvo Sllnn",
+            score: 972,
+            delta: "+35.122% ↑",
+            avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&h=120&q=80",
+            badge: "4"
+          }
+        ]
+      }
+    };
+
+    /**
+     * Inicialização e Renderização do Painel
+     */
+    function initDashboard() {
+      // Tenta obter do Apps Script caso esteja rodando dentro do GAS
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(serverData) {
+            renderDashboard(serverData || FALLBACK_MOCK_DATA);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Usando mock fallback local:', err);
+            renderDashboard(FALLBACK_MOCK_DATA);
+          })
+          .getPerformanceData();
+      } else {
+        // Modo Standalone Web
+        renderDashboard(FALLBACK_MOCK_DATA);
+      }
+    }
+
+    function renderDashboard(data) {
+      // 1. KPIs
+      document.getElementById('valTotalActions').innerText = Number(data.kpis.totalActions).toLocaleString();
+      document.getElementById('valEfficiency').innerText = data.kpis.efficiencyIndex + '%';
+      document.getElementById('fillEfficiency').style.width = data.kpis.efficiencyIndex + '%';
+      document.getElementById('valSessions').innerText = Number(data.kpis.activeSessions).toLocaleString();
+      document.getElementById('valSync').innerText = data.kpis.syncRate + '%';
+      document.getElementById('valNodes').innerText = Number(data.kpis.serverNodes).toLocaleString();
+      document.getElementById('valBandwidth').innerText = data.kpis.bandwidth;
+
+      // 2. Gráfico Hourly Traffic Peak (SVG)
+      renderTrafficChart(data.traffic);
+
+      // 3. Zone Throughput
+      renderThroughput(data.throughput);
+
+      // 4. Top Performers por Zona
+      renderPerformers('performersZoneA', data.performers['Zone A-1']);
+      renderPerformers('performersZoneB', data.performers['Zone B-2']);
+      renderPerformers('performersZoneC', data.performers['Zone C-3']);
+
+      // 5. Meta Status
+      if (data.meta) {
+        document.getElementById('footerUpdatedAt').innerText = 'Última sincronização: ' + data.meta.updatedAt;
+        if (!data.meta.isMock) {
+          document.getElementById('badgeStatus').innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#0284c7;"></span> Conectado à Planilha Google';
+        }
+      }
+    }
+
+    /**
+     * Renderização precisa do Gráfico SVG (Barras + Linha Curva + Picos)
+     */
+    function renderTrafficChart(trafficItems) {
+      const barsContainer = document.getElementById('chartDynamicBars');
+      const linesContainer = document.getElementById('chartDynamicLines');
+      const peaksContainer = document.getElementById('chartPeakCallouts');
+      const tooltip = document.getElementById('chartTooltip');
+
+      barsContainer.innerHTML = '';
+      linesContainer.innerHTML = '';
+      peaksContainer.innerHTML = '';
+
+      const svgWidth = 600;
+      const svgHeight = 230;
+      const startX = 45;
+      const endX = 575;
+      const baseY = 210;
+      const topY = 30;
+      const usableHeight = baseY - topY;
+
+      const stepX = (endX - startX) / (trafficItems.length - 1);
+      const barWidth = 24;
+
+      const linePoints = [];
+
+      trafficItems.forEach(function(item, idx) {
+        const x = startX + (idx * stepX);
+        const barHeight = (item.derociless / 100) * usableHeight;
+        const barY = baseY - barHeight;
+
+        const lineY = baseY - ((item.gestStotices / 100) * usableHeight);
+        linePoints.push({ x: x, y: lineY });
+
+        // Barras com cantos superiores arredondados
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x - (barWidth / 2));
+        rect.setAttribute('y', barY);
+        rect.setAttribute('width', barWidth);
+        rect.setAttribute('height', barHeight);
+        rect.setAttribute('rx', '6');
+        rect.setAttribute('ry', '6');
+        rect.setAttribute('fill', 'url(#barGrad)');
+        rect.style.cursor = 'pointer';
+
+        // Eventos de Tooltip
+        rect.addEventListener('mouseenter', function(e) {
+          tooltip.style.display = 'block';
+          tooltip.innerHTML = '<strong>' + item.hour + '</strong><br>Derociless: ' + item.derociless + 'k<br>Gest Stotices: ' + item.gestStotices + '%';
+        });
+        rect.addEventListener('mousemove', function(e) {
+          tooltip.style.left = (e.pageX + 12) + 'px';
+          tooltip.style.top = (e.pageY - 28) + 'px';
+        });
+        rect.addEventListener('mouseleave', function() {
+          tooltip.style.display = 'none';
+        });
+
+        barsContainer.appendChild(rect);
+
+        // Labels no Eixo X
+        const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        labelText.setAttribute('x', x);
+        labelText.setAttribute('y', baseY + 16);
+        labelText.setAttribute('text-anchor', 'middle');
+        labelText.setAttribute('fill', '#94a3b8');
+        labelText.setAttribute('font-size', '10.5');
+        labelText.textContent = item.hour;
+        barsContainer.appendChild(labelText);
+
+        // Callout de Pico se existir
+        if (item.peakLabel) {
+          const guideLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          guideLine.setAttribute('x1', x);
+          guideLine.setAttribute('y1', barY);
+          guideLine.setAttribute('x2', x);
+          guideLine.setAttribute('y2', barY - 22);
+          guideLine.setAttribute('class', 'peak-line');
+          peaksContainer.appendChild(guideLine);
+
+          const peakText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          peakText.setAttribute('x', x);
+          peakText.setAttribute('y', barY - 26);
+          peakText.setAttribute('class', 'peak-badge');
+          peakText.textContent = item.peakLabel;
+          peaksContainer.appendChild(peakText);
+        }
+      });
+
+      // Linha Suave Bezier (Smooth Spline)
+      if (linePoints.length > 1) {
+        let d = 'M ' + linePoints[0].x + ' ' + linePoints[0].y;
+        for (let i = 0; i < linePoints.length - 1; i++) {
+          const p0 = linePoints[i];
+          const p1 = linePoints[i + 1];
+          const mx = (p0.x + p1.x) / 2;
+          d += ' C ' + mx + ' ' + p0.y + ', ' + mx + ' ' + p1.y + ', ' + p1.x + ' ' + p1.y;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#06b6d4');
+        path.setAttribute('stroke-width', '2.5');
+        linesContainer.appendChild(path);
+
+        // Círculos nos pontos de dados
+        linePoints.forEach(function(pt) {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', pt.x);
+          circle.setAttribute('cy', pt.y);
+          circle.setAttribute('r', '4');
+          circle.setAttribute('fill', '#ffffff');
+          circle.setAttribute('stroke', '#06b6d4');
+          circle.setAttribute('stroke-width', '2');
+          linesContainer.appendChild(circle);
+        });
+      }
+    }
+
+    /**
+     * Renderiza lista do Zone Throughput
+     */
+    function renderThroughput(items) {
+      const container = document.getElementById('throughputContainer');
+      container.innerHTML = '';
+
+      items.forEach(function(tp) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'tp-item';
+
+        const fillWidth = Math.min(Math.max(tp.percentage, 5), 100);
+
+        itemDiv.innerHTML =
+          '<div class="tp-header">' +
+            '<span class="tp-name">' + tp.name + '</span>' +
+            '<div class="tp-tags">' +
+              '<span class="tp-tag-primary">' + (tp.percentage > 0 ? tp.percentage + '%' : tp.secondaryTag) + '</span>' +
+              '<span class="tp-tag-secondary">' + tp.secondaryTag + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="tp-bar-track">' +
+            '<div class="tp-bar-fill" style="width: ' + fillWidth + '%; background: ' + tp.gradient + ';"></div>' +
+          '</div>';
+
+        container.appendChild(itemDiv);
+      });
+    }
+
+    /**
+     * Renderiza cada tabela de Top Performers
+     */
+    function renderPerformers(elementId, performers) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      performers.forEach(function(p) {
+        const row = document.createElement('div');
+        row.className = 'performer-row';
+
+        const isMedal = p.badge === '🥇' || p.badge === '🥈';
+        const rankDisplay = isMedal ? p.badge : p.badge || p.rank;
+        const deltaClass = p.deltaColor || 'performer-delta';
+
+        row.innerHTML =
+          '<div class="performer-info">' +
+            '<span class="rank-badge">' + rankDisplay + '</span>' +
+            '<img class="performer-avatar" src="' + p.avatarUrl + '" alt="' + p.name + '">' +
+            '<div class="performer-text">' +
+              '<span class="performer-name">' + p.name + '</span>' +
+              '<span class="performer-sub">' + p.role + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="performer-score-group">' +
+            '<span class="performer-score">' + Number(p.score).toLocaleString() + '</span>' +
+            '<span class="' + deltaClass + '">' + p.delta + '</span>' +
+          '</div>';
+
+        container.appendChild(row);
+      });
+    }
+
+    // Inicializa na carga da página
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>
+
