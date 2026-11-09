@@ -7,6 +7,7 @@ import PerformanceMonitorView from "./performance-monitor-view";
 
 interface AppsScriptProjectViewProps {
   onBackToCapa?: () => void;
+  initialSubProject?: "leftover" | "performance-monitor";
 }
 
 // ======================================================================================
@@ -207,11 +208,19 @@ const INITIAL_DESTINATIONS: DestinationMonitor[] = [
   }
 ];
 
-export default function AppsScriptProjectView({ onBackToCapa }: AppsScriptProjectViewProps = {}) {
+export default function AppsScriptProjectView({ onBackToCapa, initialSubProject }: AppsScriptProjectViewProps = {}) {
   const router = useRouter();
 
   // Ramificação entre Casos Apps Script (Leftover Control vs Performance Monitor)
-  const [activeSubProject, setActiveSubProject] = useState<"leftover" | "performance-monitor">("leftover");
+  const [activeSubProject, setActiveSubProject] = useState<"leftover" | "performance-monitor">(
+    initialSubProject || "leftover"
+  );
+
+  useEffect(() => {
+    if (initialSubProject) {
+      setActiveSubProject(initialSubProject);
+    }
+  }, [initialSubProject]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

@@ -10,6 +10,8 @@ import AppsScriptProjectView from "@/components/apps-script-project-view";
 export default function PortfolioHome() {
   const [activeTab, setActiveTab] = useState<"capa" | "bio" | "projetos" | "python" | "sql" | "apps-script">("capa");
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+  const [isAppsScriptExpanded, setIsAppsScriptExpanded] = useState(true);
+  const [appsScriptSubCase, setAppsScriptSubCase] = useState<"leftover" | "performance-monitor">("leftover");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
@@ -187,13 +189,13 @@ export default function PortfolioHome() {
             </button>
           </div>
 
-          {/* 6. Projeto Apps Script */}
+          {/* 6. Projeto Apps Script com Ramificação */}
           <div className="portfolio-nav-group">
             <button
               className={`portfolio-nav-item ${activeTab === "apps-script" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("apps-script");
-                setIsSidebarOpen(false);
+                setIsAppsScriptExpanded(!isAppsScriptExpanded);
               }}
               type="button"
             >
@@ -201,8 +203,64 @@ export default function PortfolioHome() {
                 <span className="portfolio-item-icon">⚡</span>
                 Projeto Apps Script
               </span>
-              <span className="portfolio-item-arrow">→</span>
+              <span className={`portfolio-accordion-arrow ${isAppsScriptExpanded ? "open" : ""}`}>
+                ▶
+              </span>
             </button>
+
+            {/* Ramificação de Casos Apps Script */}
+            {isAppsScriptExpanded && (
+              <div className="portfolio-submenu">
+                <button
+                  className={`portfolio-subitem ${activeTab === "apps-script" && appsScriptSubCase === "leftover" ? "active" : ""}`}
+                  onClick={() => {
+                    setAppsScriptSubCase("leftover");
+                    setActiveTab("apps-script");
+                    setIsSidebarOpen(false);
+                  }}
+                  type="button"
+                  style={{ background: "transparent", border: "none", width: "100%", cursor: "pointer", textAlign: "left" }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center" }}>
+                    <span className="portfolio-subitem-dot" />
+                    Caso 1: Leftover Control
+                  </span>
+                  <span style={{ fontSize: "10px", color: "#64748b" }}>→</span>
+                </button>
+
+                <button
+                  className={`portfolio-subitem ${activeTab === "apps-script" && appsScriptSubCase === "performance-monitor" ? "active" : ""}`}
+                  onClick={() => {
+                    setAppsScriptSubCase("performance-monitor");
+                    setActiveTab("apps-script");
+                    setIsSidebarOpen(false);
+                  }}
+                  type="button"
+                  style={{ background: "transparent", border: "none", width: "100%", cursor: "pointer", textAlign: "left" }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center" }}>
+                    <span className="portfolio-subitem-dot" style={{ background: "#38bdf8" }} />
+                    Caso 2: Performance Monitor
+                  </span>
+                  <span style={{ fontSize: "10px", color: "#38bdf8" }}>→</span>
+                </button>
+
+                <a
+                  className="portfolio-subitem"
+                  href="https://script.google.com/macros/s/AKfycbw1fhV5-rLf041oVNMSZOllk_Zx3gP6bGaftLhMLlfhrtCpvLi3DOwrSx8ZHuUBeL8sFA/exec"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsSidebarOpen(false)}
+                  title="Abrir Web App no Google Apps Script"
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center" }}>
+                    <span className="portfolio-subitem-dot" style={{ background: "#10b981" }} />
+                    Execução Google Apps Script
+                  </span>
+                  <span style={{ fontSize: "9px", color: "#10b981", fontWeight: 800, background: "rgba(16, 185, 129, 0.15)", padding: "1px 5px", borderRadius: "4px" }}>LIVE ↗</span>
+                </a>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -1029,7 +1087,10 @@ export default function PortfolioHome() {
 
         {/* VIEW 6: PROJETO APPS SCRIPT */}
         {activeTab === "apps-script" && (
-          <AppsScriptProjectView onBackToCapa={() => setActiveTab("capa")} />
+          <AppsScriptProjectView
+            initialSubProject={appsScriptSubCase}
+            onBackToCapa={() => setActiveTab("capa")}
+          />
         )}
       </main>
 
