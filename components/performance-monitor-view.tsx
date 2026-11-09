@@ -329,6 +329,16 @@ export default function PerformanceMonitorView() {
           </div>
 
           <div className="flex items-center gap-4">
+            <a
+              href="https://script.google.com/macros/s/AKfycbw1fhV5-rLf041oVNMSZOllk_Zx3gP6bGaftLhMLlfhrtCpvLi3DOwrSx8ZHuUBeL8sFA/exec"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-sm hover:from-sky-600 hover:to-blue-700 transition-all flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Abrir Web App no Google Apps Script ↗
+            </a>
+
             <Link
               href="/projeto-apps-script"
               className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:text-sky-600 hover:border-sky-300 transition-all"
@@ -679,6 +689,14 @@ export default function PerformanceMonitorView() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <a
+                href="https://script.google.com/macros/s/AKfycbw1fhV5-rLf041oVNMSZOllk_Zx3gP6bGaftLhMLlfhrtCpvLi3DOwrSx8ZHuUBeL8sFA/exec"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white hover:bg-sky-400 transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                Acessar Execução Google (Live) ↗
+              </a>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 100% Mock Safe

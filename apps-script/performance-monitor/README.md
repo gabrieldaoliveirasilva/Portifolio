@@ -4,6 +4,12 @@ Aplicação Web App moderna e de alta fidelidade desenvolvida em **Google Apps S
 
 ---
 
+## 🌐 URL do Web App Publicado (Google Apps Script)
+👉 **[Acessar Web App no Google Apps Script](https://script.google.com/macros/s/AKfycbw1fhV5-rLf041oVNMSZOllk_Zx3gP6bGaftLhMLlfhrtCpvLi3DOwrSx8ZHuUBeL8sFA/exec)**  
+*(Execução em ambiente de produção com dados 100% sintéticos e resilientes)*
+
+---
+
 ## 🚀 Como Executar / Fazer Deploy no Google Apps Script
 
 ### Opção 1: Direto no Navegador (Menos de 2 minutos)

@@ -266,6 +266,20 @@ export default function BioPage() {
               Projeto SQL ↗
             </Link>
             <Link
+              href="/performance-monitor"
+              style={{
+                padding: "8px 16px",
+                borderRadius: "6px",
+                background: "#0284c7",
+                color: "#ffffff",
+                fontSize: "13px",
+                fontWeight: 700,
+                textDecoration: "none"
+              }}
+            >
+              Performance Monitor (GAS) ↗
+            </Link>
+            <Link
               href="/projeto-apps-script"
               style={{
                 padding: "8px 16px",
